@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dream Team Roofing — Door Log</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #23262b;
+    --bg-panel: #2c3036;
+    --bg-panel-2: #333840;
+    --paper: #eae6da;
+    --paper-2: #ded8c8;
+    --ink: #23262b;
+    --ink-soft: #4b4f56;
+    --accent: #f2b705;
+    --accent-ink: #23262b;
+    --danger: #c1451f;
+    --positive: #4c7a51;
+    --neutral: #8a8f98;
+    --hostile: #8e2f2f;
+    --muted: #9aa0aa;
+    --line: rgba(255,255,255,0.09);
+    --radius: 3px;
+    --shadow: 0 10px 30px rgba(0,0,0,0.35);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 10% -10%, rgba(242,183,5,0.05), transparent 60%),
+      var(--bg);
+    color:var(--paper);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    padding-bottom:80px;
+  }
+  .wrap{max-width:1100px;margin:0 auto;padding:0 20px;}
+
+  /* ---------- HEADER ---------- */
+  header.top{
+    border-bottom:1px solid var(--line);
+    padding:28px 0 22px;
+    background:
+      repeating-linear-gradient(
+        115deg,
+        rgba(255,255,255,0.015) 0px,
+        rgba(255,255,255,0.015) 2px,
+        transparent 2px,
+        transparent 14px
+      );
+  }
+  .brand-row{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;}
+  .brand{display:flex;align-items:center;gap:14px;}
+  .brand-mark{
+    width:44px;height:44px;flex:none;border-radius:2px;
+    background:var(--accent);
+    position:relative;
+    transform:rotate(-3deg);
+    box-shadow:0 4px 10px rgba(0,0,0,0.35);
+  }
+  .brand-mark::before,.brand-mark::after{
+    content:"";position:absolute;left:8px;right:8px;height:3px;background:var(--ink);
+  }
+  .brand-mark::before{top:12px;}
+  .brand-mark::after{top:20px;}
+  .brand-mark span{
+    position:absolute;left:8px;right:8px;bottom:9px;height:3px;background:var(--ink);
+  }
+  .brand h1{
+    font-family:'Oswald',sans-serif;
+    font-weight:700;
+    font-size:26px;
+    letter-spacing:0.03em;
+    text-transform:uppercase;
+    margin:0;
+    line-height:1;
+  }
+  .brand small{
+    display:block;
+    font-family:'IBM Plex Mono',monospace;
+    color:var(--muted);
+    font-size:11px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    margin-top:6px;
+  }
+  .add-btn{
+    font-family:'Oswald',sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    font-weight:600;
+    font-size:14px;
+    background:var(--accent);
+    color:var(--accent-ink);
+    border:none;
+    padding:13px 22px;
+    border-radius:2px;
+    cursor:pointer;
+    box-shadow:0 4px 0 #b98a03;
+    transition:transform .08s ease;
+  }
+  .add-btn:hover{transform:translateY(-1px);}
+  .add-btn:active{transform:translateY(2px);box-shadow:0 2px 0 #b98a03;}
+
+  /* ---------- STATS STRIP ---------- */
+  .stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+    margin:22px 0 26px;
+    border-radius:2px;
+    overflow:hidden;
+  }
+  .stat{
+    background:var(--bg-panel);
+    padding:16px 18px;
+  }
+  .stat .num{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:26px;
+    font-weight:600;
+    color:var(--accent);
+  }
+  .stat .label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin-top:4px;
+  }
+
+  /* ---------- CONTROLS ---------- */
+  .controls{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+    margin-bottom:20px;
+  }
+  .search{
+    flex:1;
+    min-width:200px;
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    color:var(--paper);
+    padding:11px 14px;
+    border-radius:2px;
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+  }
+  .search::placeholder{color:var(--muted);}
+  .filter-chip{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    color:var(--muted);
+    padding:9px 13px;
+    border-radius:2px;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .filter-chip.active{
+    background:var(--accent);
+    color:var(--accent-ink);
+    border-color:var(--accent);
+  }
+
+  /* ---------- TICKET GRID ---------- */
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+    gap:18px;
+  }
+  .empty{
+    grid-column:1/-1;
+    text-align:center;
+    padding:60px 20px;
+    color:var(--muted);
+    border:1px dashed var(--line);
+    border-radius:4px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+  }
+
+  .ticket{
+    background:var(--paper);
+    color:var(--ink);
+    border-radius:2px;
+    position:relative;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+  .ticket::before{
+    content:"";
+    display:block;
+    height:0;
+    border-top:2px dashed rgba(35,38,43,0.25);
+    margin:0 14px;
+    position:relative;
+    top:14px;
+  }
+  .ticket-head{
+    padding:16px 16px 6px;
+  }
+  .ticket-status{
+    display:inline-block;
+    font-family:'Oswald',sans-serif;
+    font-weight:700;
+    font-size:11.5px;
+    letter-spacing:0.09em;
+    text-transform:uppercase;
+    padding:4px 9px;
+    border-radius:2px;
+    border:2px solid currentColor;
+    transform:rotate(-2deg);
+  }
+  .status-knocked{color:var(--ink-soft);}
+  .status-no_answer{color:var(--neutral);}
+  .status-callback{color:#8a6a12;}
+  .status-completed{color:var(--positive);}
+  .status-not_interested{color:var(--danger);}
+
+  .ticket-address{
+    font-family:'Oswald',sans-serif;
+    font-weight:600;
+    font-size:17px;
+    margin:10px 0 2px;
+    line-height:1.25;
+  }
+  .ticket-date{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+  }
+  .ticket-body{
+    padding:10px 16px 16px;
+    font-size:13.5px;
+    line-height:1.5;
+  }
+  .ticket-row{margin-bottom:9px;}
+  .ticket-row .lbl{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    display:block;
+    margin-bottom:3px;
+  }
+  .tags{display:flex;flex-wrap:wrap;gap:5px;}
+  .tag{
+    background:rgba(193,69,31,0.12);
+    color:var(--danger);
+    border:1px solid rgba(193,69,31,0.35);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    padding:3px 7px;
+    border-radius:2px;
+    text-transform:uppercase;
+  }
+  .tag.none{
+    background:rgba(76,122,81,0.12);
+    color:var(--positive);
+    border-color:rgba(76,122,81,0.35);
+  }
+  .interaction-badge{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    text-transform:uppercase;
+    padding:3px 7px;
+    border-radius:2px;
+    display:inline-block;
+  }
+  .int-positive{background:rgba(76,122,81,0.14);color:var(--positive);}
+  .int-neutral{background:rgba(138,143,152,0.18);color:var(--ink-soft);}
+  .int-negative{background:rgba(193,69,31,0.14);color:var(--danger);}
+  .int-hostile{background:rgba(142,47,47,0.16);color:var(--hostile);}
+
+  .ticket-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:6px;
+    padding:0 16px 14px;
+  }
+  .icon-btn{
+    background:none;
+    border:1px solid rgba(35,38,43,0.2);
+    color:var(--ink-soft);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    padding:5px 10px;
+    border-radius:2px;
+    cursor:pointer;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+  }
+  .icon-btn:hover{background:rgba(35,38,43,0.06);}
+  .icon-btn.del:hover{color:var(--danger);border-color:var(--danger);}
+
+  /* ---------- MODAL ---------- */
+  .overlay{
+    position:fixed;inset:0;
+    background:rgba(15,16,18,0.6);
+    display:none;
+    align-items:flex-start;
+    justify-content:center;
+    padding:40px 16px;
+    overflow-y:auto;
+    z-index:50;
+  }
+  .overlay.show{display:flex;}
+  .clip{
+    width:100%;max-width:560px;
+    position:relative;
+    margin-top:20px;
+  }
+  .clip-top{
+    width:110px;height:26px;
+    background:linear-gradient(180deg,#c7c1b2,#a8a294);
+    border-radius:6px 6px 0 0;
+    margin:0 auto -2px;
+    position:relative;
+    box-shadow:0 -2px 4px rgba(0,0,0,0.25) inset;
+  }
+  .clip-top::after{
+    content:"";
+    position:absolute;
+    top:6px;left:50%;transform:translateX(-50%);
+    width:70px;height:12px;
+    border-radius:6px;
+    background:#8f897a;
+  }
+  .form-panel{
+    background:var(--paper);
+    color:var(--ink);
+    border-radius:3px;
+    padding:26px 26px 22px;
+    box-shadow:var(--shadow);
+  }
+  .form-title{
+    font-family:'Oswald',sans-serif;
+    font-weight:700;
+    font-size:20px;
+    text-transform:uppercase;
+    letter-spacing:0.02em;
+    margin:0 0 4px;
+  }
+  .form-sub{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    margin-bottom:18px;
+  }
+  .field{margin-bottom:16px;}
+  .field label{
+    display:block;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:6px;
+  }
+  .field input[type=text],
+  .field input[type=date],
+  .field textarea,
+  .field select{
+    width:100%;
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+    padding:10px 11px;
+    border:1px solid rgba(35,38,43,0.2);
+    border-radius:2px;
+    background:#fff;
+    color:var(--ink);
+  }
+  .field textarea{resize:vertical;min-height:64px;}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .radio-row, .check-row{display:flex;flex-wrap:wrap;gap:8px;}
+  .pill-option{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    text-transform:uppercase;
+    padding:8px 12px;
+    border:1px solid rgba(35,38,43,0.25);
+    border-radius:2px;
+    cursor:pointer;
+    background:#fff;
+    user-select:none;
+  }
+  .pill-option input{display:none;}
+  .pill-option.checked{
+    background:var(--ink);
+    color:var(--paper);
+    border-color:var(--ink);
+  }
+  .form-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    margin-top:20px;
+    padding-top:16px;
+    border-top:1px solid rgba(35,38,43,0.15);
+  }
+  .btn-secondary{
+    background:none;
+    border:1px solid rgba(35,38,43,0.3);
+    color:var(--ink-soft);
+    font-family:'Oswald',sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+    font-weight:600;
+    padding:11px 18px;
+    border-radius:2px;
+    cursor:pointer;
+  }
+  .btn-primary{
+    background:var(--ink);
+    color:var(--paper);
+    border:none;
+    font-family:'Oswald',sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+    font-weight:600;
+    padding:11px 20px;
+    border-radius:2px;
+    cursor:pointer;
+  }
+
+  footer.app-footer{
+    max-width:1100px;margin:36px auto 0;padding:0 20px;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;color:var(--muted);
+  }
+  footer.app-footer a{color:var(--muted);}
+  footer.app-footer button{
+    background:none;border:1px solid var(--line);color:var(--muted);
+    font-family:'IBM Plex Mono',monospace;font-size:11px;
+    padding:6px 10px;border-radius:2px;cursor:pointer;
+  }
+
+  @media (max-width:640px){
+    .stats{grid-template-columns:repeat(2,1fr);}
+    .two-col{grid-template-columns:1fr;}
+    .brand h1{font-size:21px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap brand-row">
+    <div class="brand">
+      <div class="brand-mark"><span></span></div>
+      <div>
+        <h1>Dream Team Roofing</h1>
+        <small>Door Log &amp; Job Tracker</small>
+      </div>
+    </div>
+    <button class="add-btn" onclick="openForm()">+ Log a Door</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="stats" id="stats"></div>
+
+  <div class="controls">
+    <input type="text" class="search" id="searchInput" placeholder="Search by address, notes, or damage...">
+    <div class="filter-chip active" data-filter="all">All</div>
+    <div class="filter-chip" data-filter="knocked">Knocked</div>
+    <div class="filter-chip" data-filter="no_answer">No Answer</div>
+    <div class="filter-chip" data-filter="callback">Callback</div>
+    <div class="filter-chip" data-filter="completed">Completed</div>
+    <div class="filter-chip" data-filter="not_interested">Not Interested</div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+</div>
+
+<footer class="app-footer">
+  <span id="storageNote">Saved locally in this browser.</span>
+  <div style="display:flex;gap:8px;">
+    <button onclick="exportData()">Export JSON</button>
+    <button onclick="document.getElementById('importFile').click()">Import JSON</button>
+    <input type="file" id="importFile" accept="application/json" style="display:none">
+  </div>
+</footer>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay">
+  <div class="clip">
+    <div class="clip-top"></div>
+    <div class="form-panel">
+      <div class="form-title" id="formTitle">Log a Door</div>
+      <div class="form-sub">Dream Team Roofing — Field Entry</div>
+
+      <form id="entryForm">
+        <input type="hidden" id="entryId">
+        <div class="field">
+          <label>Address</label>
+          <input type="text" id="f_address" placeholder="123 Main St, Phoenix, AZ" required>
+        </div>
+
+        <div class="two-col">
+          <div class="field">
+            <label>Date</label>
+            <input type="date" id="f_date" required>
+          </div>
+          <div class="field">
+            <label>Rep Name (optional)</label>
+            <input type="text" id="f_rep" placeholder="Who knocked">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Visit Status</label>
+          <div class="radio-row" id="statusOptions">
+            <label class="pill-option"><input type="radio" name="status" value="knocked">Knocked</label>
+            <label class="pill-option"><input type="radio" name="status" value="no_answer">No Answer</label>
+            <label class="pill-option"><input type="radio" name="status" value="callback">Callback</label>
+            <label class="pill-option"><input type="radio" name="status" value="completed">Job Completed</label>
+            <label class="pill-option"><input type="radio" name="status" value="not_interested">Not Interested</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Damage Found</label>
+          <div class="check-row" id="damageOptions">
+            <label class="pill-option"><input type="checkbox" value="Missing shingles">Missing Shingles</label>
+            <label class="pill-option"><input type="checkbox" value="Hail damage">Hail Damage</label>
+            <label class="pill-option"><input type="checkbox" value="Wind damage">Wind Damage</label>
+            <label class="pill-option"><input type="checkbox" value="Leak">Leak</label>
+            <label class="pill-option"><input type="checkbox" value="Flashing/gutter damage">Flashing/Gutter</label>
+            <label class="pill-option"><input type="checkbox" value="None visible">None Visible</label>
+            <label class="pill-option"><input type="checkbox" value="Other">Other</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Customer Interaction</label>
+          <div class="radio-row" id="interactionOptions">
+            <label class="pill-option"><input type="radio" name="interaction" value="positive">Positive</label>
+            <label class="pill-option"><input type="radio" name="interaction" value="neutral">Neutral</label>
+            <label class="pill-option"><input type="radio" name="interaction" value="negative">Negative</label>
+            <label class="pill-option"><input type="radio" name="interaction" value="hostile">Hostile</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Feedback Given / Notes</label>
+          <textarea id="f_feedback" placeholder="What did you tell them, what did they say back, follow-up needed..."></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" onclick="closeForm()">Cancel</button>
+          <button type="submit" class="btn-primary">Save Entry</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'dtr_door_log_v1';
+
+function loadEntries(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  }catch(e){
+    console.error('Failed to load entries', e);
+    return [];
+  }
+}
+function saveEntries(entries){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+  }catch(e){
+    console.error('Failed to save entries', e);
+    alert('Could not save — your browser storage may be full or disabled.');
+  }
+}
+
+let entries = loadEntries();
+let currentFilter = 'all';
+let searchTerm = '';
+
+const statusLabels = {
+  knocked: 'Knocked',
+  no_answer: 'No Answer',
+  callback: 'Callback',
+  completed: 'Job Completed',
+  not_interested: 'Not Interested'
+};
+const interactionLabels = {
+  positive:'Positive', neutral:'Neutral', negative:'Negative', hostile:'Hostile'
+};
+
+function uid(){
+  return 'e_' + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+}
+
+function fmtDate(d){
+  if(!d) return '';
+  const dt = new Date(d + 'T00:00:00');
+  if(isNaN(dt)) return d;
+  return dt.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+}
+
+function render(){
+  renderStats();
+  renderGrid();
+}
+
+function renderStats(){
+  const total = entries.length;
+  const completed = entries.filter(e=>e.status==='completed').length;
+  const damageFound = entries.filter(e=>e.damage && e.damage.length && !(e.damage.length===1 && e.damage[0]==='None visible')).length;
+  const rate = total ? Math.round((completed/total)*100) : 0;
+
+  const stats = [
+    {num: total, label:'Doors Logged'},
+    {num: completed, label:'Jobs Completed'},
+    {num: damageFound, label:'Damage Found'},
+    {num: rate + '%', label:'Close Rate'}
+  ];
+  document.getElementById('stats').innerHTML = stats.map(s=>`
+    <div class="stat"><div class="num">${s.num}</div><div class="label">${s.label}</div></div>
+  `).join('');
+}
+
+function renderGrid(){
+  const grid = document.getElementById('grid');
+  let list = entries.slice().sort((a,b)=> (b.date||'').localeCompare(a.date||'') || b.createdAt-a.createdAt);
+
+  if(currentFilter !== 'all'){
+    list = list.filter(e=>e.status===currentFilter);
+  }
+  if(searchTerm.trim()){
+    const t = searchTerm.toLowerCase();
+    list = list.filter(e=>
+      (e.address||'').toLowerCase().includes(t) ||
+      (e.feedback||'').toLowerCase().includes(t) ||
+      (e.damage||[]).join(' ').toLowerCase().includes(t) ||
+      (e.rep||'').toLowerCase().includes(t)
+    );
+  }
+
+  if(!list.length){
+    grid.innerHTML = `<div class="empty">No entries yet. Click "+ Log a Door" to add the first one.</div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map(e=>{
+    const damageTags = (e.damage && e.damage.length)
+      ? e.damage.map(d=>`<span class="tag ${d==='None visible'?'none':''}">${escapeHtml(d)}</span>`).join('')
+      : `<span class="tag none">Not recorded</span>`;
+
+    return `
+      <div class="ticket">
+        <div class="ticket-head">
+          <span class="ticket-status status-${e.status}">${statusLabels[e.status]||e.status}</span>
+          <div class="ticket-address">${escapeHtml(e.address)}</div>
+          <div class="ticket-date">${fmtDate(e.date)}${e.rep?(' &middot; '+escapeHtml(e.rep)):''}</div>
+        </div>
+        <div class="ticket-body">
+          <div class="ticket-row">
+            <span class="lbl">Damage Found</span>
+            <div class="tags">${damageTags}</div>
+          </div>
+          ${e.interaction ? `
+          <div class="ticket-row">
+            <span class="lbl">Customer Interaction</span>
+            <span class="interaction-badge int-${e.interaction}">${interactionLabels[e.interaction]}</span>
+          </div>` : ''}
+          ${e.feedback ? `
+          <div class="ticket-row">
+            <span class="lbl">Feedback / Notes</span>
+            ${escapeHtml(e.feedback)}
+          </div>` : ''}
+        </div>
+        <div class="ticket-actions">
+          <button class="icon-btn" onclick="editEntry('${e.id}')">Edit</button>
+          <button class="icon-btn del" onclick="deleteEntry('${e.id}')">Delete</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function escapeHtml(str){
+  return (str||'').replace(/[&<>"']/g, c=>({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+/* ---------- FORM HANDLING ---------- */
+const overlay = document.getElementById('overlay');
+const entryForm = document.getElementById('entryForm');
+
+function openForm(entry){
+  document.getElementById('formTitle').textContent = entry ? 'Edit Entry' : 'Log a Door';
+  document.getElementById('entryId').value = entry ? entry.id : '';
+  document.getElementById('f_address').value = entry ? entry.address : '';
+  document.getElementById('f_date').value = entry ? entry.date : new Date().toISOString().slice(0,10);
+  document.getElementById('f_rep').value = entry ? (entry.rep||'') : '';
+  document.getElementById('f_feedback').value = entry ? (entry.feedback||'') : '';
+
+  document.querySelectorAll('#statusOptions .pill-option').forEach(el=>{
+    const input = el.querySelector('input');
+    input.checked = entry ? entry.status === input.value : false;
+    el.classList.toggle('checked', input.checked);
+  });
+  document.querySelectorAll('#interactionOptions .pill-option').forEach(el=>{
+    const input = el.querySelector('input');
+    input.checked = entry ? entry.interaction === input.value : false;
+    el.classList.toggle('checked', input.checked);
+  });
+  document.querySelectorAll('#damageOptions .pill-option').forEach(el=>{
+    const input = el.querySelector('input');
+    input.checked = entry ? (entry.damage||[]).includes(input.value) : false;
+    el.classList.toggle('checked', input.checked);
+  });
+
+  overlay.classList.add('show');
+}
+function closeForm(){
+  overlay.classList.remove('show');
+  entryForm.reset();
+}
+
+document.querySelectorAll('.pill-option').forEach(el=>{
+  el.addEventListener('click', (ev)=>{
+    const input = el.querySelector('input');
+    if(input.type === 'checkbox'){
+      // toggling handled natively; sync class after
+      setTimeout(()=> el.classList.toggle('checked', input.checked), 0);
+    } else {
+      // radio: uncheck siblings in same group
+      const name = input.name;
+      document.querySelectorAll(`input[name="${name}"]`).forEach(sib=>{
+        sib.closest('.pill-option').classList.remove('checked');
+      });
+      setTimeout(()=> el.classList.add('checked'), 0);
+    }
+  });
+});
+
+entryForm.addEventListener('submit', function(ev){
+  ev.preventDefault();
+  const id = document.getElementById('entryId').value;
+  const status = document.querySelector('input[name="status"]:checked');
+  if(!status){
+    alert('Please select a visit status.');
+    return;
+  }
+  const damage = Array.from(document.querySelectorAll('#damageOptions input:checked')).map(i=>i.value);
+  const interactionEl = document.querySelector('input[name="interaction"]:checked');
+
+  const data = {
+    id: id || uid(),
+    address: document.getElementById('f_address').value.trim(),
+    date: document.getElementById('f_date').value,
+    rep: document.getElementById('f_rep').value.trim(),
+    status: status.value,
+    damage,
+    interaction: interactionEl ? interactionEl.value : '',
+    feedback: document.getElementById('f_feedback').value.trim(),
+    createdAt: Date.now()
+  };
+
+  if(id){
+    const idx = entries.findIndex(e=>e.id===id);
+    if(idx>-1){
+      data.createdAt = entries[idx].createdAt;
+      entries[idx] = data;
+    }
+  } else {
+    entries.push(data);
+  }
+  saveEntries(entries);
+  closeForm();
+  render();
+});
+
+function editEntry(id){
+  const entry = entries.find(e=>e.id===id);
+  if(entry) openForm(entry);
+}
+function deleteEntry(id){
+  if(!confirm('Delete this entry? This cannot be undone.')) return;
+  entries = entries.filter(e=>e.id!==id);
+  saveEntries(entries);
+  render();
+}
+
+/* ---------- FILTERS & SEARCH ---------- */
+document.querySelectorAll('.filter-chip').forEach(chip=>{
+  chip.addEventListener('click', ()=>{
+    document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    currentFilter = chip.dataset.filter;
+    renderGrid();
+  });
+});
+document.getElementById('searchInput').addEventListener('input', (e)=>{
+  searchTerm = e.target.value;
+  renderGrid();
+});
+
+/* ---------- IMPORT / EXPORT ---------- */
+function exportData(){
+  const blob = new Blob([JSON.stringify(entries, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'dream-team-roofing-door-log-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+document.getElementById('importFile').addEventListener('change', function(ev){
+  const file = ev.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(){
+    try{
+      const imported = JSON.parse(reader.result);
+      if(!Array.isArray(imported)) throw new Error('Invalid file format');
+      const existingIds = new Set(entries.map(e=>e.id));
+      let added = 0;
+      imported.forEach(item=>{
+        if(item && item.address && !existingIds.has(item.id)){
+          entries.push(Object.assign({}, item, {id: item.id || uid()}));
+          added++;
+        }
+      });
+      saveEntries(entries);
+      render();
+      alert(`Imported ${added} new entr${added===1?'y':'ies'}.`);
+    }catch(err){
+      alert('Could not import that file. Make sure it\'s a JSON export from this app.');
+    }
+    ev.target.value = '';
+  };
+  reader.readAsText(file);
+});
+
+/* ---------- INIT ---------- */
+try{
+  window.localStorage.setItem('__test__','1');
+  window.localStorage.removeItem('__test__');
+}catch(e){
+  document.getElementById('storageNote').textContent =
+    'Browser storage unavailable in this preview — once hosted (e.g. GitHub Pages) entries will save normally.';
+}
+
+render();
+</script>
+</body>
+</html>
