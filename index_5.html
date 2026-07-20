@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dream Team Roofing — Door Log</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+  :root{
+    --bg: #23262b;
+    --bg-panel: #2c3036;
+    --bg-panel-2: #333840;
+    --paper: #eae6da;
+    --paper-2: #ded8c8;
+    --ink: #23262b;
+    --ink-soft: #4b4f56;
+    --accent: #f2b705;
+    --accent-ink: #23262b;
+    --danger: #c1451f;
+    --positive: #4c7a51;
+    --neutral: #8a8f98;
+    --hostile: #8e2f2f;
+    --muted: #9aa0aa;
+    --line: rgba(255,255,255,0.09);
+    --radius: 3px;
+    --shadow: 0 10px 30px rgba(0,0,0,0.35);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 10% -10%, rgba(242,183,5,0.05), transparent 60%),
+      var(--bg);
+    color:var(--paper);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    padding-bottom:80px;
+  }
+  .wrap{max-width:1100px;margin:0 auto;padding:0 20px;}
+
+  /* ---------- HEADER ---------- */
+  header.top{
+    border-bottom:1px solid var(--line);
+    padding:28px 0 22px;
+    background:
+      repeating-linear-gradient(
+        115deg,
+        rgba(255,255,255,0.015) 0px,
+        rgba(255,255,255,0.015) 2px,
+        transparent 2px,
+        transparent 14px
+      );
+  }
+  .brand-row{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;}
+  .brand{display:flex;align-items:center;gap:14px;}
+  .brand-mark{
+    width:44px;height:44px;flex:none;border-radius:2px;
+    background:var(--accent);
+    position:relative;
+    transform:rotate(-3deg);
+    box-shadow:0 4px 10px rgba(0,0,0,0.35);
+  }
+  .brand-mark::before,.brand-mark::after{
+    content:"";position:absolute;left:8px;right:8px;height:3px;background:var(--ink);
+  }
+  .brand-mark::before{top:12px;}
+  .brand-mark::after{top:20px;}
+  .brand-mark span{
+    position:absolute;left:8px;right:8px;bottom:9px;height:3px;background:var(--ink);
+  }
+  .brand h1{
+    font-family:'Oswald',sans-serif;
+    font-weight:700;
+    font-size:26px;
+    letter-spacing:0.03em;
+    text-transform:uppercase;
+    margin:0;
+    line-height:1;
+  }
+  .brand small{
+    display:block;
+    font-family:'IBM Plex Mono',monospace;
+    color:var(--muted);
+    font-size:11px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    margin-top:6px;
+  }
+  .add-btn{
+    font-family:'Oswald',sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    font-weight:600;
+    font-size:14px;
+    background:var(--accent);
+    color:var(--accent-ink);
+    border:none;
+    padding:13px 22px;
+    border-radius:2px;
+    cursor:pointer;
+    box-shadow:0 4px 0 #b98a03;
+    transition:transform .08s ease;
+  }
+  .add-btn:hover{transform:translateY(-1px);}
+  .add-btn:active{transform:translateY(2px);box-shadow:0 2px 0 #b98a03;}
+
+  /* ---------- STATS STRIP ---------- */
+  .stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+    margin:22px 0 26px;
+    border-radius:2px;
+    overflow:hidden;
+  }
+  .stat{
+    background:var(--bg-panel);
+    padding:16px 18px;
+  }
+  .stat .num{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:26px;
+    font-weight:600;
+    color:var(--accent);
+  }
+  .stat .label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin-top:4px;
+  }
+
+  /* ---------- CONTROLS ---------- */
+  .controls{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+    margin-bottom:20px;
+  }
+  .search{
+    flex:1;
+    min-width:200px;
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    color:var(--paper);
+    padding:11px 14px;
+    border-radius:2px;
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+  }
+  .search::placeholder{color:var(--muted);}
+  .filter-chip{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    color:var(--muted);
+    padding:9px 13px;
+    border-radius:2px;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .filter-chip.active{
+    background:var(--accent);
+    color:var(--accent-ink);
+    border-color:var(--accent);
+  }
+
+  /* ---------- VIEW TOGGLE ---------- */
+  .view-toggle{
+    display:flex;
+    gap:2px;
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:2px;
+    padding:2px;
+  }
+  .view-toggle button{
+    font-family:'Oswald',sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+    font-weight:600;
+    font-size:12.5px;
+    background:none;
+    border:none;
+    color:var(--muted);
+    padding:8px 16px;
+    border-radius:2px;
+    cursor:pointer;
+  }
+  .view-toggle button.active{
+    background:var(--accent);
+    color:var(--accent-ink);
+  }
+
+  /* ---------- MAP VIEW ---------- */
+  #mapView{display:none;}
+  #mapView.show{display:block;}
+  #leafletMap{
+    height:520px;
+    border-radius:3px;
+    border:1px solid var(--line);
+    background:var(--bg-panel);
+  }
+  .map-legend{
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px;
+    margin-top:12px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+  }
+  .map-legend span{display:inline-flex;align-items:center;gap:6px;}
+  .dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
+  .map-note{
+    margin-top:10px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--muted);
+  }
+  .leaflet-popup-content-wrapper{
+    border-radius:4px;
+    padding:2px;
+  }
+  .leaflet-popup-content{
+    font-family:'Inter',sans-serif;
+    font-size:15px;
+    line-height:1.6;
+    margin:14px 16px;
+    min-width:220px;
+  }
+  .leaflet-popup-content b{
+    font-family:'Oswald',sans-serif;
+    text-transform:uppercase;
+    font-size:17px;
+    letter-spacing:0.02em;
+  }
+  .leaflet-popup-tip{width:14px;height:14px;}
+  .popup-status-badge{
+    display:inline-block;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    padding:3px 8px;
+    border-radius:2px;
+    margin:6px 0 4px;
+  }
+  .popup-row{margin-top:4px;font-size:14px;}
+  .popup-row .lbl{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:var(--ink-soft);
+    display:block;
+  }
+
+  /* ---------- PARCEL LOOKUP ---------- */
+  .address-row{display:flex;gap:8px;align-items:flex-start;}
+  .address-row input{flex:1;}
+  .lookup-btn{
+    flex:none;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+    background:var(--ink);
+    color:var(--paper);
+    border:none;
+    padding:0 14px;
+    border-radius:2px;
+    cursor:pointer;
+    height:40px;
+    white-space:nowrap;
+  }
+  .lookup-btn:disabled{opacity:0.5;cursor:wait;}
+  .parcel-info{
+    margin-top:8px;
+    padding:10px 12px;
+    background:rgba(35,38,43,0.05);
+    border:1px solid rgba(35,38,43,0.12);
+    border-radius:2px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    display:none;
+  }
+  .parcel-info.show{display:block;}
+  .parcel-info .pi-row{margin-bottom:3px;}
+  .parcel-info .pi-row:last-child{margin-bottom:0;}
+
+  /* ---------- TICKET GRID ---------- */
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+    gap:18px;
+  }
+  .empty{
+    grid-column:1/-1;
+    text-align:center;
+    padding:60px 20px;
+    color:var(--muted);
+    border:1px dashed var(--line);
+    border-radius:4px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+  }
+
+  .ticket{
+    background:var(--paper);
+    color:var(--ink);
+    border-radius:2px;
+    position:relative;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+  .ticket::before{
+    content:"";
+    display:block;
+    height:0;
+    border-top:2px dashed rgba(35,38,43,0.25);
+    margin:0 14px;
+    position:relative;
+    top:14px;
+  }
+  .ticket-head{
+    padding:16px 16px 6px;
+  }
+  .ticket-status{
+    display:inline-block;
+    font-family:'Oswald',sans-serif;
+    font-weight:700;
+    font-size:11.5px;
+    letter-spacing:0.09em;
+    text-transform:uppercase;
+    padding:4px 9px;
+    border-radius:2px;
+    border:2px solid currentColor;
+    transform:rotate(-2deg);
+  }
+  .status-knocked{color:var(--ink-soft);}
+  .status-no_answer{color:var(--neutral);}
+  .status-callback{color:#8a6a12;}
+  .status-completed{color:var(--positive);}
+  .status-not_interested{color:var(--danger);}
+
+  .ticket-address{
+    font-family:'Oswald',sans-serif;
+    font-weight:600;
+    font-size:17px;
+    margin:10px 0 2px;
+    line-height:1.25;
+  }
+  .ticket-date{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+  }
+  .ticket-body{
+    padding:10px 16px 16px;
+    font-size:13.5px;
+    line-height:1.5;
+  }
+  .ticket-row{margin-bottom:9px;}
+  .ticket-row .lbl{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    display:block;
+    margin-bottom:3px;
+  }
+  .tags{display:flex;flex-wrap:wrap;gap:5px;}
+  .tag{
+    background:rgba(193,69,31,0.12);
+    color:var(--danger);
+    border:1px solid rgba(193,69,31,0.35);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    padding:3px 7px;
+    border-radius:2px;
+    text-transform:uppercase;
+  }
+  .tag.none{
+    background:rgba(76,122,81,0.12);
+    color:var(--positive);
+    border-color:rgba(76,122,81,0.35);
+  }
+  .interaction-badge{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    text-transform:uppercase;
+    padding:3px 7px;
+    border-radius:2px;
+    display:inline-block;
+  }
+  .int-positive{background:rgba(76,122,81,0.14);color:var(--positive);}
+  .int-neutral{background:rgba(138,143,152,0.18);color:var(--ink-soft);}
+  .int-negative{background:rgba(193,69,31,0.14);color:var(--danger);}
+  .int-hostile{background:rgba(142,47,47,0.16);color:var(--hostile);}
+
+  .ticket-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:6px;
+    padding:0 16px 14px;
+  }
+  .icon-btn{
+    background:none;
+    border:1px solid rgba(35,38,43,0.2);
+    color:var(--ink-soft);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    padding:5px 10px;
+    border-radius:2px;
+    cursor:pointer;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+  }
+  .icon-btn:hover{background:rgba(35,38,43,0.06);}
+  .icon-btn.del:hover{color:var(--danger);border-color:var(--danger);}
+
+  /* ---------- MODAL ---------- */
+  .overlay{
+    position:fixed;inset:0;
+    background:rgba(15,16,18,0.6);
+    display:none;
+    align-items:flex-start;
+    justify-content:center;
+    padding:40px 16px;
+    overflow-y:auto;
+    z-index:50;
+  }
+  .overlay.show{display:flex;}
+  .clip{
+    width:100%;max-width:560px;
+    position:relative;
+    margin-top:20px;
+  }
+  .clip-top{
+    width:110px;height:26px;
+    background:linear-gradient(180deg,#c7c1b2,#a8a294);
+    border-radius:6px 6px 0 0;
+    margin:0 auto -2px;
+    position:relative;
+    box-shadow:0 -2px 4px rgba(0,0,0,0.25) inset;
+  }
+  .clip-top::after{
+    content:"";
+    position:absolute;
+    top:6px;left:50%;transform:translateX(-50%);
+    width:70px;height:12px;
+    border-radius:6px;
+    background:#8f897a;
+  }
+  .form-panel{
+    background:var(--paper);
+    color:var(--ink);
+    border-radius:3px;
+    padding:26px 26px 22px;
+    box-shadow:var(--shadow);
+  }
+  .form-title{
+    font-family:'Oswald',sans-serif;
+    font-weight:700;
+    font-size:20px;
+    text-transform:uppercase;
+    letter-spacing:0.02em;
+    margin:0 0 4px;
+  }
+  .form-sub{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    margin-bottom:18px;
+  }
+  .field{margin-bottom:16px;}
+  .field label{
+    display:block;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:6px;
+  }
+  .field input[type=text],
+  .field input[type=date],
+  .field textarea,
+  .field select{
+    width:100%;
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+    padding:10px 11px;
+    border:1px solid rgba(35,38,43,0.2);
+    border-radius:2px;
+    background:#fff;
+    color:var(--ink);
+  }
+  .field textarea{resize:vertical;min-height:64px;}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .radio-row, .check-row{display:flex;flex-wrap:wrap;gap:8px;}
+  .pill-option{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    text-transform:uppercase;
+    padding:8px 12px;
+    border:1px solid rgba(35,38,43,0.25);
+    border-radius:2px;
+    cursor:pointer;
+    background:#fff;
+    user-select:none;
+  }
+  .pill-option input{display:none;}
+  .pill-option.checked{
+    background:var(--ink);
+    color:var(--paper);
+    border-color:var(--ink);
+  }
+  .form-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    margin-top:20px;
+    padding-top:16px;
+    border-top:1px solid rgba(35,38,43,0.15);
+  }
+  .btn-secondary{
+    background:none;
+    border:1px solid rgba(35,38,43,0.3);
+    color:var(--ink-soft);
+    font-family:'Oswald',sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+    font-weight:600;
+    padding:11px 18px;
+    border-radius:2px;
+    cursor:pointer;
+  }
+  .btn-primary{
+    background:var(--ink);
+    color:var(--paper);
+    border:none;
+    font-family:'Oswald',sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+    font-weight:600;
+    padding:11px 20px;
+    border-radius:2px;
+    cursor:pointer;
+  }
+
+  footer.app-footer{
+    max-width:1100px;margin:36px auto 0;padding:0 20px;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;color:var(--muted);
+  }
+  footer.app-footer a{color:var(--muted);}
+  footer.app-footer button{
+    background:none;border:1px solid var(--line);color:var(--muted);
+    font-family:'IBM Plex Mono',monospace;font-size:11px;
+    padding:6px 10px;border-radius:2px;cursor:pointer;
+  }
+
+  @media (max-width:640px){
+    .stats{grid-template-columns:repeat(2,1fr);}
+    .two-col{grid-template-columns:1fr;}
+    .brand h1{font-size:21px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap brand-row">
+    <div class="brand">
+      <div class="brand-mark"><span></span></div>
+      <div>
+        <h1>Dream Team Roofing</h1>
+        <small>Door Log &amp; Job Tracker</small>
+      </div>
+    </div>
+    <button class="add-btn" onclick="openForm()">+ Log a Door</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="stats" id="stats"></div>
+
+  <div class="controls">
+    <input type="text" class="search" id="searchInput" placeholder="Search by address, notes, or damage...">
+    <div class="filter-chip active" data-filter="all">All</div>
+    <div class="filter-chip" data-filter="knocked">Knocked</div>
+    <div class="filter-chip" data-filter="no_answer">No Answer</div>
+    <div class="filter-chip" data-filter="callback">Callback</div>
+    <div class="filter-chip" data-filter="completed">Completed</div>
+    <div class="filter-chip" data-filter="not_interested">Not Interested</div>
+    <div class="view-toggle">
+      <button id="listViewBtn" class="active" onclick="setView('list')">List</button>
+      <button id="mapViewBtn" onclick="setView('map')">Map</button>
+    </div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div id="mapView">
+    <div id="leafletMap"></div>
+    <div class="map-legend">
+      <span><span class="dot" style="background:#4b4f56"></span>Knocked</span>
+      <span><span class="dot" style="background:#8a8f98"></span>No Answer</span>
+      <span><span class="dot" style="background:#c99a1e"></span>Callback</span>
+      <span><span class="dot" style="background:#4c7a51"></span>Completed</span>
+      <span><span class="dot" style="background:#c1451f"></span>Not Interested</span>
+    </div>
+    <div class="map-note">Only entries with property info looked up (via the "Find Property" button on the form) appear on the map.</div>
+  </div>
+</div>
+
+<footer class="app-footer">
+  <span id="storageNote">Saved locally in this browser.</span>
+  <div style="display:flex;gap:8px;">
+    <button onclick="exportData()">Export JSON</button>
+    <button onclick="document.getElementById('importFile').click()">Import JSON</button>
+    <input type="file" id="importFile" accept="application/json" style="display:none">
+  </div>
+</footer>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay">
+  <div class="clip">
+    <div class="clip-top"></div>
+    <div class="form-panel">
+      <div class="form-title" id="formTitle">Log a Door</div>
+      <div class="form-sub">Dream Team Roofing — Field Entry</div>
+
+      <form id="entryForm">
+        <input type="hidden" id="entryId">
+        <div class="field">
+          <label>Address</label>
+          <div class="address-row">
+            <input type="text" id="f_address" placeholder="123 Main St, Tucson, AZ" required>
+            <button type="button" class="lookup-btn" id="lookupBtn" onclick="lookupParcel()">Find Property</button>
+          </div>
+          <div class="parcel-info" id="parcelInfo"></div>
+          <input type="hidden" id="f_lat">
+          <input type="hidden" id="f_lon">
+          <input type="hidden" id="f_owner">
+          <input type="hidden" id="f_yearbuilt">
+        </div>
+
+        <div class="two-col">
+          <div class="field">
+            <label>Date</label>
+            <input type="date" id="f_date" required>
+          </div>
+          <div class="field">
+            <label>Rep Name (optional)</label>
+            <input type="text" id="f_rep" placeholder="Who knocked">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Visit Status</label>
+          <div class="radio-row" id="statusOptions">
+            <label class="pill-option"><input type="radio" name="status" value="knocked">Knocked</label>
+            <label class="pill-option"><input type="radio" name="status" value="no_answer">No Answer</label>
+            <label class="pill-option"><input type="radio" name="status" value="callback">Callback</label>
+            <label class="pill-option"><input type="radio" name="status" value="completed">Job Completed</label>
+            <label class="pill-option"><input type="radio" name="status" value="not_interested">Not Interested</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Damage Found</label>
+          <div class="check-row" id="damageOptions">
+            <label class="pill-option"><input type="checkbox" value="Missing shingles">Missing Shingles</label>
+            <label class="pill-option"><input type="checkbox" value="Hail damage">Hail Damage</label>
+            <label class="pill-option"><input type="checkbox" value="Wind damage">Wind Damage</label>
+            <label class="pill-option"><input type="checkbox" value="Leak">Leak</label>
+            <label class="pill-option"><input type="checkbox" value="Flashing/gutter damage">Flashing/Gutter</label>
+            <label class="pill-option"><input type="checkbox" value="None visible">None Visible</label>
+            <label class="pill-option"><input type="checkbox" value="Other">Other</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Customer Interaction</label>
+          <div class="radio-row" id="interactionOptions">
+            <label class="pill-option"><input type="radio" name="interaction" value="positive">Positive</label>
+            <label class="pill-option"><input type="radio" name="interaction" value="neutral">Neutral</label>
+            <label class="pill-option"><input type="radio" name="interaction" value="negative">Negative</label>
+            <label class="pill-option"><input type="radio" name="interaction" value="hostile">Hostile</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Feedback Given / Notes</label>
+          <textarea id="f_feedback" placeholder="What did you tell them, what did they say back, follow-up needed..."></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" onclick="closeForm()">Cancel</button>
+          <button type="submit" class="btn-primary">Save Entry</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'dtr_door_log_v1';
+
+function loadEntries(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  }catch(e){
+    console.error('Failed to load entries', e);
+    return [];
+  }
+}
+function saveEntries(entries){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+  }catch(e){
+    console.error('Failed to save entries', e);
+    alert('Could not save — your browser storage may be full or disabled.');
+  }
+}
+
+let entries = loadEntries();
+let currentFilter = 'all';
+let searchTerm = '';
+
+const statusLabels = {
+  knocked: 'Knocked',
+  no_answer: 'No Answer',
+  callback: 'Callback',
+  completed: 'Job Completed',
+  not_interested: 'Not Interested'
+};
+const interactionLabels = {
+  positive:'Positive', neutral:'Neutral', negative:'Negative', hostile:'Hostile'
+};
+
+function uid(){
+  return 'e_' + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+}
+
+function fmtDate(d){
+  if(!d) return '';
+  const dt = new Date(d + 'T00:00:00');
+  if(isNaN(dt)) return d;
+  return dt.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+}
+
+function render(){
+  renderStats();
+  renderGrid();
+  if(document.getElementById('mapView').classList.contains('show')){
+    renderMapMarkers();
+  }
+}
+
+function renderStats(){
+  const total = entries.length;
+  const completed = entries.filter(e=>e.status==='completed').length;
+  const damageFound = entries.filter(e=>e.damage && e.damage.length && !(e.damage.length===1 && e.damage[0]==='None visible')).length;
+  const rate = total ? Math.round((completed/total)*100) : 0;
+
+  const stats = [
+    {num: total, label:'Doors Logged'},
+    {num: completed, label:'Jobs Completed'},
+    {num: damageFound, label:'Damage Found'},
+    {num: rate + '%', label:'Close Rate'}
+  ];
+  document.getElementById('stats').innerHTML = stats.map(s=>`
+    <div class="stat"><div class="num">${s.num}</div><div class="label">${s.label}</div></div>
+  `).join('');
+}
+
+function renderGrid(){
+  const grid = document.getElementById('grid');
+  let list = entries.slice().sort((a,b)=> (b.date||'').localeCompare(a.date||'') || b.createdAt-a.createdAt);
+
+  if(currentFilter !== 'all'){
+    list = list.filter(e=>e.status===currentFilter);
+  }
+  if(searchTerm.trim()){
+    const t = searchTerm.toLowerCase();
+    list = list.filter(e=>
+      (e.address||'').toLowerCase().includes(t) ||
+      (e.feedback||'').toLowerCase().includes(t) ||
+      (e.damage||[]).join(' ').toLowerCase().includes(t) ||
+      (e.rep||'').toLowerCase().includes(t)
+    );
+  }
+
+  if(!list.length){
+    grid.innerHTML = `<div class="empty">No entries yet. Click "+ Log a Door" to add the first one.</div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map(e=>{
+    const damageTags = (e.damage && e.damage.length)
+      ? e.damage.map(d=>`<span class="tag ${d==='None visible'?'none':''}">${escapeHtml(d)}</span>`).join('')
+      : `<span class="tag none">Not recorded</span>`;
+
+    return `
+      <div class="ticket">
+        <div class="ticket-head">
+          <span class="ticket-status status-${e.status}">${statusLabels[e.status]||e.status}</span>
+          <div class="ticket-address">${escapeHtml(e.address)}</div>
+          <div class="ticket-date">${fmtDate(e.date)}${e.rep?(' &middot; '+escapeHtml(e.rep)):''}</div>
+        </div>
+        <div class="ticket-body">
+          <div class="ticket-row">
+            <span class="lbl">Damage Found</span>
+            <div class="tags">${damageTags}</div>
+          </div>
+          ${e.interaction ? `
+          <div class="ticket-row">
+            <span class="lbl">Customer Interaction</span>
+            <span class="interaction-badge int-${e.interaction}">${interactionLabels[e.interaction]}</span>
+          </div>` : ''}
+          ${e.feedback ? `
+          <div class="ticket-row">
+            <span class="lbl">Feedback / Notes</span>
+            ${escapeHtml(e.feedback)}
+          </div>` : ''}
+        </div>
+        <div class="ticket-actions">
+          <button class="icon-btn" onclick="editEntry('${e.id}')">Edit</button>
+          <button class="icon-btn del" onclick="deleteEntry('${e.id}')">Delete</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function escapeHtml(str){
+  return (str||'').replace(/[&<>"']/g, c=>({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+/* ---------- FORM HANDLING ---------- */
+const overlay = document.getElementById('overlay');
+const entryForm = document.getElementById('entryForm');
+
+function openForm(entry){
+  document.getElementById('formTitle').textContent = entry ? 'Edit Entry' : 'Log a Door';
+  document.getElementById('entryId').value = entry ? entry.id : '';
+  document.getElementById('f_address').value = entry ? entry.address : '';
+  document.getElementById('f_date').value = entry ? entry.date : new Date().toISOString().slice(0,10);
+  document.getElementById('f_rep').value = entry ? (entry.rep||'') : '';
+  document.getElementById('f_feedback').value = entry ? (entry.feedback||'') : '';
+  document.getElementById('f_lat').value = entry ? (entry.lat||'') : '';
+  document.getElementById('f_lon').value = entry ? (entry.lon||'') : '';
+  document.getElementById('f_owner').value = entry ? (entry.owner||'') : '';
+  document.getElementById('f_yearbuilt').value = entry ? (entry.yearBuilt||'') : '';
+  const piBox = document.getElementById('parcelInfo');
+  if(entry && (entry.owner || entry.yearBuilt || entry.lat)){
+    piBox.innerHTML = buildParcelInfoHtml(entry.owner, entry.yearBuilt, entry.lat, entry.lon);
+    piBox.classList.add('show');
+  } else {
+    piBox.innerHTML = '';
+    piBox.classList.remove('show');
+  }
+
+  document.querySelectorAll('#statusOptions .pill-option').forEach(el=>{
+    const input = el.querySelector('input');
+    input.checked = entry ? entry.status === input.value : false;
+    el.classList.toggle('checked', input.checked);
+  });
+  document.querySelectorAll('#interactionOptions .pill-option').forEach(el=>{
+    const input = el.querySelector('input');
+    input.checked = entry ? entry.interaction === input.value : false;
+    el.classList.toggle('checked', input.checked);
+  });
+  document.querySelectorAll('#damageOptions .pill-option').forEach(el=>{
+    const input = el.querySelector('input');
+    input.checked = entry ? (entry.damage||[]).includes(input.value) : false;
+    el.classList.toggle('checked', input.checked);
+  });
+
+  overlay.classList.add('show');
+}
+function closeForm(){
+  overlay.classList.remove('show');
+  entryForm.reset();
+}
+
+document.querySelectorAll('.pill-option').forEach(el=>{
+  el.addEventListener('click', (ev)=>{
+    const input = el.querySelector('input');
+    if(input.type === 'checkbox'){
+      // toggling handled natively; sync class after
+      setTimeout(()=> el.classList.toggle('checked', input.checked), 0);
+    } else {
+      // radio: uncheck siblings in same group
+      const name = input.name;
+      document.querySelectorAll(`input[name="${name}"]`).forEach(sib=>{
+        sib.closest('.pill-option').classList.remove('checked');
+      });
+      setTimeout(()=> el.classList.add('checked'), 0);
+    }
+  });
+});
+
+entryForm.addEventListener('submit', function(ev){
+  ev.preventDefault();
+  const id = document.getElementById('entryId').value;
+  const status = document.querySelector('input[name="status"]:checked');
+  if(!status){
+    alert('Please select a visit status.');
+    return;
+  }
+  const damage = Array.from(document.querySelectorAll('#damageOptions input:checked')).map(i=>i.value);
+  const interactionEl = document.querySelector('input[name="interaction"]:checked');
+
+  const data = {
+    id: id || uid(),
+    address: document.getElementById('f_address').value.trim(),
+    date: document.getElementById('f_date').value,
+    rep: document.getElementById('f_rep').value.trim(),
+    status: status.value,
+    damage,
+    interaction: interactionEl ? interactionEl.value : '',
+    feedback: document.getElementById('f_feedback').value.trim(),
+    lat: document.getElementById('f_lat').value ? parseFloat(document.getElementById('f_lat').value) : null,
+    lon: document.getElementById('f_lon').value ? parseFloat(document.getElementById('f_lon').value) : null,
+    owner: document.getElementById('f_owner').value.trim(),
+    yearBuilt: document.getElementById('f_yearbuilt').value.trim(),
+    createdAt: Date.now()
+  };
+
+  if(id){
+    const idx = entries.findIndex(e=>e.id===id);
+    if(idx>-1){
+      data.createdAt = entries[idx].createdAt;
+      entries[idx] = data;
+    }
+  } else {
+    entries.push(data);
+  }
+  saveEntries(entries);
+  closeForm();
+  render();
+});
+
+function editEntry(id){
+  const entry = entries.find(e=>e.id===id);
+  if(entry) openForm(entry);
+}
+function deleteEntry(id){
+  if(!confirm('Delete this entry? This cannot be undone.')) return;
+  entries = entries.filter(e=>e.id!==id);
+  saveEntries(entries);
+  render();
+}
+
+/* ---------- FILTERS & SEARCH ---------- */
+document.querySelectorAll('.filter-chip').forEach(chip=>{
+  chip.addEventListener('click', ()=>{
+    document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    currentFilter = chip.dataset.filter;
+    renderGrid();
+  });
+});
+document.getElementById('searchInput').addEventListener('input', (e)=>{
+  searchTerm = e.target.value;
+  renderGrid();
+});
+
+/* ---------- IMPORT / EXPORT ---------- */
+function exportData(){
+  const blob = new Blob([JSON.stringify(entries, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'dream-team-roofing-door-log-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+document.getElementById('importFile').addEventListener('change', function(ev){
+  const file = ev.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(){
+    try{
+      const imported = JSON.parse(reader.result);
+      if(!Array.isArray(imported)) throw new Error('Invalid file format');
+      const existingIds = new Set(entries.map(e=>e.id));
+      let added = 0;
+      imported.forEach(item=>{
+        if(item && item.address && !existingIds.has(item.id)){
+          entries.push(Object.assign({}, item, {id: item.id || uid()}));
+          added++;
+        }
+      });
+      saveEntries(entries);
+      render();
+      alert(`Imported ${added} new entr${added===1?'y':'ies'}.`);
+    }catch(err){
+      alert('Could not import that file. Make sure it\'s a JSON export from this app.');
+    }
+    ev.target.value = '';
+  };
+  reader.readAsText(file);
+});
+
+/* ---------- PIMA COUNTY PARCEL LOOKUP ---------- */
+// Public ArcGIS REST endpoint — Pima County Assessor parcel layer (PAREGION).
+// No API key required; this is open government GIS data.
+const PARCEL_ENDPOINT = 'https://mapdata.tucsonaz.gov/public/rest/services/PublicMaps/PropertyHousing/MapServer/17/query';
+
+function buildParcelInfoHtml(owner, yearBuilt, lat, lon){
+  let rows = '';
+  if(owner) rows += `<div class="pi-row"><b>Owner:</b> ${escapeHtml(owner)}</div>`;
+  if(yearBuilt) rows += `<div class="pi-row"><b>Year Built:</b> ${escapeHtml(String(yearBuilt))}</div>`;
+  if(lat && lon) rows += `<div class="pi-row"><b>Location:</b> found &amp; will show on Map view</div>`;
+  return rows || '<div class="pi-row">No matching parcel found.</div>';
+}
+
+// ArcGIS REST servers that don't send CORS headers (like Pima County's) still
+// support JSONP — loading the response via a <script> tag instead of fetch(),
+// which browsers don't block. This sidesteps the "failed to fetch" CORS error.
+function jsonpRequest(url, timeoutMs = 10000){
+  return new Promise((resolve, reject)=>{
+    const callbackName = 'parcelCb_' + Date.now() + '_' + Math.floor(Math.random()*100000);
+    const script = document.createElement('script');
+    let done = false;
+
+    const cleanup = ()=>{
+      done = true;
+      delete window[callbackName];
+      if(script.parentNode) script.parentNode.removeChild(script);
+      clearTimeout(timer);
+    };
+
+    const timer = setTimeout(()=>{
+      if(!done){ cleanup(); reject(new Error('Request timed out')); }
+    }, timeoutMs);
+
+    window[callbackName] = function(data){
+      if(done) return;
+      cleanup();
+      resolve(data);
+    };
+
+    script.onerror = function(){
+      if(done) return;
+      cleanup();
+      reject(new Error('Script load error'));
+    };
+
+    script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + callbackName;
+    document.body.appendChild(script);
+  });
+}
+
+async function lookupParcel(){
+  const addressInput = document.getElementById('f_address');
+  const address = addressInput.value.trim();
+  if(!address){
+    alert('Enter an address first.');
+    return;
+  }
+  const btn = document.getElementById('lookupBtn');
+  const piBox = document.getElementById('parcelInfo');
+  btn.disabled = true;
+  btn.textContent = 'Searching...';
+  piBox.classList.remove('show');
+
+  // Use just the street portion (before the first comma) for a looser match,
+  // since the county's SITE_ADDRESS field doesn't include city/state/zip.
+  const streetPart = address.split(',')[0].trim().replace(/'/g, "''");
+  const where = `UPPER(SITE_ADDRESS) LIKE UPPER('%${streetPart}%')`;
+  const params = new URLSearchParams({
+    where,
+    outFields: 'ADDRESSEE,SITE_ADDRESS,YearBuilt,LAT,LON,USE_DESC,GISACRES',
+    returnGeometry: 'false',
+    f: 'json',
+    resultRecordCount: '1'
+  });
+
+  try{
+    const data = await jsonpRequest(`${PARCEL_ENDPOINT}?${params.toString()}`);
+    const feature = data.features && data.features[0];
+    if(feature){
+      const attrs = feature.attributes;
+      document.getElementById('f_owner').value = attrs.ADDRESSEE || '';
+      document.getElementById('f_yearbuilt').value = attrs.YearBuilt || '';
+      document.getElementById('f_lat').value = attrs.LAT || '';
+      document.getElementById('f_lon').value = attrs.LON || '';
+      piBox.innerHTML = buildParcelInfoHtml(attrs.ADDRESSEE, attrs.YearBuilt, attrs.LAT, attrs.LON);
+      piBox.classList.add('show');
+    } else {
+      piBox.innerHTML = buildParcelInfoHtml(null,null,null,null);
+      piBox.classList.add('show');
+    }
+  } catch(err){
+    console.error('Parcel lookup failed', err);
+    piBox.innerHTML = '<div class="pi-row">Could not reach Pima County\'s parcel service right now. You can still save this entry without property info.</div>';
+    piBox.classList.add('show');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Find Property';
+  }
+}
+
+/* ---------- VIEW TOGGLE (LIST / MAP) ---------- */
+let leafletMap = null;
+let markerLayer = null;
+
+function setView(view){
+  const grid = document.getElementById('grid');
+  const mapView = document.getElementById('mapView');
+  const listBtn = document.getElementById('listViewBtn');
+  const mapBtn = document.getElementById('mapViewBtn');
+
+  if(view === 'map'){
+    grid.style.display = 'none';
+    mapView.classList.add('show');
+    listBtn.classList.remove('active');
+    mapBtn.classList.add('active');
+    initMapIfNeeded();
+    renderMapMarkers();
+    setTimeout(()=>{ if(leafletMap) leafletMap.invalidateSize(); }, 50);
+  } else {
+    grid.style.display = 'grid';
+    mapView.classList.remove('show');
+    listBtn.classList.add('active');
+    mapBtn.classList.remove('active');
+  }
+}
+
+function initMapIfNeeded(){
+  if(leafletMap) return;
+  // Centered on Tucson, AZ by default.
+  leafletMap = L.map('leafletMap').setView([32.2226, -110.9747], 11);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors',
+    maxZoom: 19
+  }).addTo(leafletMap);
+  markerLayer = L.layerGroup().addTo(leafletMap);
+}
+
+const statusColors = {
+  knocked: '#4b4f56',
+  no_answer: '#8a8f98',
+  callback: '#c99a1e',
+  completed: '#4c7a51',
+  not_interested: '#c1451f'
+};
+
+function renderMapMarkers(){
+  if(!markerLayer) return;
+  markerLayer.clearLayers();
+  const withCoords = entries.filter(e => e.lat && e.lon);
+  const bounds = [];
+
+  withCoords.forEach(e=>{
+    const color = statusColors[e.status] || '#4b4f56';
+    const marker = L.circleMarker([e.lat, e.lon], {
+      radius: 11,
+      color: '#23262b',
+      weight: 2,
+      fillColor: color,
+      fillOpacity: 0.9
+    });
+    const popupHtml = `
+      <b>${escapeHtml(e.address)}</b>
+      <div class="popup-status-badge" style="background:${color}22;color:${color};border:1px solid ${color}55;">
+        ${statusLabels[e.status]||e.status}
+      </div>
+      <div class="popup-row"><span class="lbl">Date</span>${fmtDate(e.date)}</div>
+      ${e.owner ? `<div class="popup-row"><span class="lbl">Owner</span>${escapeHtml(e.owner)}</div>` : ''}
+      ${e.yearBuilt ? `<div class="popup-row"><span class="lbl">Year Built</span>${escapeHtml(String(e.yearBuilt))}</div>` : ''}
+    `;
+    marker.bindPopup(popupHtml, {minWidth: 240, maxWidth: 320});
+    marker.addTo(markerLayer);
+    bounds.push([e.lat, e.lon]);
+  });
+
+  if(bounds.length){
+    leafletMap.fitBounds(bounds, {padding:[30,30], maxZoom:15});
+  }
+}
+
+/* ---------- INIT ---------- */
+try{
+  window.localStorage.setItem('__test__','1');
+  window.localStorage.removeItem('__test__');
+}catch(e){
+  document.getElementById('storageNote').textContent =
+    'Browser storage unavailable in this preview — once hosted (e.g. GitHub Pages) entries will save normally.';
+}
+
+render();
+</script>
+</body>
+</html>
