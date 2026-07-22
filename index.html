@@ -468,7 +468,7 @@
     justify-content:center;
     padding:40px 16px;
     overflow-y:auto;
-    z-index:50;
+    z-index:5000;
   }
   .overlay.show{display:flex;}
   .clip{
@@ -948,12 +948,19 @@ document.querySelectorAll('.pill-option').forEach(el=>{
       // toggling handled natively; sync class after
       setTimeout(()=> el.classList.toggle('checked', input.checked), 0);
     } else {
-      // radio: uncheck siblings in same group
+      // radio: manage state manually so clicking the already-selected
+      // option a second time deselects it instead of staying stuck checked.
+      ev.preventDefault();
+      const wasChecked = input.checked;
       const name = input.name;
       document.querySelectorAll(`input[name="${name}"]`).forEach(sib=>{
+        sib.checked = false;
         sib.closest('.pill-option').classList.remove('checked');
       });
-      setTimeout(()=> el.classList.add('checked'), 0);
+      if(!wasChecked){
+        input.checked = true;
+        el.classList.add('checked');
+      }
     }
   });
 });
